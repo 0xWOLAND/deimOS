@@ -81,7 +81,6 @@ void terminal_putentryat(char c, uint8_t color, size_t x, size_t y) {
 }
 
 void terminal_putchar(char c) {
-    memmove(terminal_buffer, terminal_buffer + VGA_WIDTH, VGA_WIDTH * (VGA_HEIGHT - 1) * sizeof(uint16_t));
     size_t index = (VGA_HEIGHT - 1) * VGA_WIDTH;
     for(size_t x = 0; x < VGA_WIDTH; ++x)
     {
