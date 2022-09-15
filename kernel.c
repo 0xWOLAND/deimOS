@@ -1,7 +1,6 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <string.h>
 
 #if defined(__linux__)
 #error "You are not using a cross-compiler, you will most certainly run into trouble"
@@ -81,18 +80,6 @@ void terminal_putentryat(char c, uint8_t color, size_t x, size_t y) {
     terminal_buffer[index] = vga_entry(c, color);
 }
 
-void terminal_scroll(void){
-    for(size_t y = 0; y < VGA_HEIGHT; y++){
-        for(size_t x = 0; x < VGA_WIDTH; x++){
-            terminal_buffer[y * VGA_WIDTH + x] = terminal_buffer[(y + 1) * VGA_WIDTH + x];
-        }
-    }
-}
-
-void terminal_update(void){
-    memcpy(VGA_MEMORY, terminal_buffer);
-}
-
 void terminal_putchar(char c) {
     memmove(terminal_buffer, terminal_buffer + VGA_WIDTH, VGA_WIDTH * (VGA_HEIGHT - 1) * sizeof(uint16_t));
     size_t index = (VGA_HEIGHT - 1) * VGA_WIDTH;
@@ -110,8 +97,7 @@ void terminal_putchar(char c) {
         if (++terminal_column >= VGA_WIDTH) {
             terminal_column = 0;
             if (++terminal_row >= VGA_HEIGHT) {
-                terminal_scroll();
-                terminal_update();
+                terminal_row = 0;
             }
         }
     }
