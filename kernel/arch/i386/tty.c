@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
+#include <umath.h>
  
 #include <kernel/tty.h>
  
@@ -61,8 +62,10 @@ void terminal_putchar(char c) {
 	int line;
 	unsigned char uc = c;
  
+	// terminal_putentryat(uc, terminal_color, terminal_column, terminal_row);
+	if(c != '\n')
 	terminal_putentryat(uc, terminal_color, terminal_column, terminal_row);
-	if (++terminal_column == VGA_WIDTH) {
+	if (++terminal_column == VGA_WIDTH || c == '\n') {
 		terminal_column = 0;
 		if (++terminal_row == VGA_HEIGHT)
 		{

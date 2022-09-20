@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
+#include <umath.h>
  
 #include <kernel/tty.h>
  
