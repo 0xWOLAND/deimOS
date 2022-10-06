@@ -1,68 +1,43 @@
-/*
-   	This file says where each of the sections defined in the
-   	object files should go in order to make up the resulting
-   	binary
-*/
-
-/*
-	The bootloader will look at this image and start execution
-	at the symbol we designate as the entry point:
-*/
+/* The bootloader will look at this image and start execution at the symbol
+   designated at the entry point. */
 ENTRY(_start)
 
-/*
-	Now we specify where the various sections of the object files
-	will be put in the final kernel image.  This bit basically
-	defines the image layout; each block in here defines an output
-	section in terms of the input sections that should be combined
-	to make it up.
-*/
+/* Tell where the various sections of the object files will be put in the final
+   kernel image. */
 SECTIONS
 {
-	/* We start at 1MiB, which is a conventional place for kernels
-	   to be loaded to by the bootloader.  "." means "the place that
-	   you're currently writing to, and is a variable that can be
-	   read from or written to -- eg. you could do ". = . + 1000 to
-	   leave 1000 empty bytes. */
+	/* Begin putting sections at 1 MiB, a conventional place for kernels to be
+	   loaded at by the bootloader. */
 	. = 1M;
 
-	/* Define a block called ".text".  The "BLOCK(4K)" means "move forward to the
-	   next 4 KiB boundary; of course, as this is at the start of the file, it's
-	   a no-op -- but the ones further down are meaningful. I don't know what the
-	   ALIGN is for; the docs at https://www.math.utah.edu/docs/info/ld_3.html#IDX226
-	   don't mention it... aha!  It looks like it's a backward-compatibility thing
-	   that dupes the BLOCK.  See https://stackoverflow.com/questions/43686352/block-and-align-in-linker-script */
+	/* First put the multiboot header, as it is required to be put very early
+	   early in the image or the bootloader won't recognize the file format.
+	   Next we'll put the .text section. */
 	.text BLOCK(4K) : ALIGN(4K)
 	{
-		/* Now we put in our multiboot header, which needs to be near the
-		   start of the image.  The line below means 'include here all sections
-		   called ".multiboot" from all input files' */
 		*(.multiboot)
-
-		/* Likewise, this means 'include here all sections called ".text" from all
-		   input files' */
 		*(.text)
 	}
 
+	/* Read-only data. */
 	.rodata BLOCK(4K) : ALIGN(4K)
 	{
-		/* Read-only data */
 		*(.rodata)
 	}
 
+	/* Read-write data (initialized) */
 	.data BLOCK(4K) : ALIGN(4K)
 	{
-		/* Read-write data */
-		*(.rodata)
+		*(.data)
 	}
 
+	/* Read-write data (uninitialized) and stack */
 	.bss BLOCK(4K) : ALIGN(4K)
 	{
-		/* "COMMON" is a specifier for all "uninitialized data" from all input files.
-		   Not clear on exactly what that means */
 		*(COMMON)
-		/* stack section -- see boot.s */
 		*(.bss)
 	}
 
+	/* The compiler may produce other sections, put them in the proper place in
+	   in this file, if you'd like to include them in the final kernel. */
 }

@@ -4,7 +4,7 @@
 #include <sys/cdefs.h>
  
 #include <stddef.h>
- 
+#include <stdint.h> 
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -12,6 +12,7 @@ extern "C" {
 float sin(float x, float y);
 float cos(float x, float y);
 char rotate();
+void encodeGdtEntry(uint8_t *target, struct GDT source);
 
 #ifdef __cplusplus
 }
